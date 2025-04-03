@@ -40,6 +40,8 @@ new #[Layout('components.layouts.auth')] class extends Component {
             'password' => $validated['password'],
         ])));
 
+        //simpan data ke tabel user
+        
         // Simpan data ke tabel penyewa
         Penyewa::create([
             'user_id' => $user->id,

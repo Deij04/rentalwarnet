@@ -13,9 +13,10 @@
                 </form>
             </div>
         </div>
-
+        
         <!-- Kartu Statistik -->
         <div class="grid gap-6 md:grid-cols-4 mb-8">
+            @can('halaman admin')
             <!-- Kartu Jumlah User -->
             <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-md p-6 border border-neutral-200 dark:border-neutral-700">
                 <div class="flex items-center gap-4">
@@ -92,7 +93,34 @@
                 Kelola Transaksi
             </a>
         </div>
+        @endcan('halaman admin')
 
+        @can('halaman penyewa')
+        @cannot('halaman admin')
+        <!-- Kartu Lihat Transaksi yang Diperbesar -->
+        <div class="mb-8">
+            <a href="{{ route('transaksi.index') }}" class="block bg-gradient-to-r from-orange-400 to-orange-500 rounded-xl shadow-md p-8">
+                <div class="flex items-center justify-between">
+                    <div class="text-white">
+                        <h3 class="text-2xl font-semibold">Transaksi</h3>
+                        <p class="text-base mt-2">Booking disini</p>
+                        <button class="mt-4 bg-white text-orange-500 hover:bg-gray-100 font-semibold py-2 px-4 rounded-lg">
+                            Lihat
+                        </button>
+                    </div>
+                    <div>
+                        <!-- Gambar roket yang lebih besar -->
+                        <svg class="w-32 h-32 text-white opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+        </div>
+        @endcannot
+        @endcan('halaman penyewa')
+
+        @can('halaman admin')
         <!-- Placeholder untuk Data Terbaru (Opsional) -->
         <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-md p-6 border border-neutral-200 dark:border-neutral-700">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Transaksi Terbaru</h2>
@@ -127,5 +155,6 @@
                 </table>
             </div>
         </div>
+        @endcan('halaman admin')
     </div>
 </x-layouts.app>

@@ -3,6 +3,7 @@
 use Livewire\Volt\Component;
 use App\Models\Transaksi;
 use Livewire\Attributes\Layout;
+use Illuminate\Support\Facades\Auth;
 
 new #[Layout('components.layouts.app')] class extends Component {
     public $transaksis;
@@ -15,8 +16,20 @@ new #[Layout('components.layouts.app')] class extends Component {
 
     public function refreshTransaksis()
     {
+        $user = Auth::user();
         $query = Transaksi::query();
 
+        // Role-based filtering
+        if ($user->hasRole('Penyewa')) {
+            // For Penyewa, only show their own transactions
+            $query->where('penyewa_id', $user->id);
+        } elseif (!$user->hasRole('Admin')) {
+            // If the user is neither Admin nor Penyewa, restrict access
+            abort(403, 'Anda tidak memiliki izin untuk melihat daftar transaksi.');
+        }
+        // Admin can see all transactions, so no additional filtering needed
+        
+        // Apply search filters
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('date', 'like', '%' . $this->search . '%')
@@ -35,7 +48,7 @@ new #[Layout('components.layouts.app')] class extends Component {
             });
         }
 
-        // Tambahkan pengurutan descending berdasarkan created_at
+        // Fetch transactions with relationships, ordered by created_at descending
         $this->transaksis = $query->with(['user', 'penyewa.user', 'room'])
                                  ->orderByDesc('created_at')
                                  ->get();
@@ -50,9 +63,16 @@ new #[Layout('components.layouts.app')] class extends Component {
 
     public function delete($id)
     {
+        $user = Auth::user();
         $transaksi = Transaksi::find($id);
 
         if ($transaksi) {
+            // Ensure Penyewa can only delete their own transactions
+            if ($user->hasRole('Penyewa') && $transaksi->penyewa_id !== $user->id) {
+                session()->flash('error', 'Anda hanya dapat menghapus transaksi Anda sendiri.');
+                return;
+            }
+
             $transaksi->delete();
             session()->flash('message', 'Data transaksi berhasil dihapus.');
         }
@@ -90,6 +110,12 @@ new #[Layout('components.layouts.app')] class extends Component {
                 </svg>
                 <span class="block sm:inline">{{ session('message') }}</span>
             </div>
+        </div>
+        @endif
+
+        @if (session()->has('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow-sm mb-4" role="alert">
+            <span class="block sm:inline">{{ session('error') }}</span>
         </div>
         @endif
 

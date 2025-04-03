@@ -26,8 +26,13 @@
                     <flux:navlist.item icon="user" :href="route('user.index')" :current="request()->routeIs
                     ('user.index')" wire:navigate class="text-white">{{ __('user') }}</flux:navlist.item>
                     @endcan
+                    @can('mengelola Penyewa')
                     <flux:navlist.item icon="user-group" :href="route('penyewa.index')" :current="request()->routeIs('penyewa.index')" wire:navigate class="text-white">{{ __('penyewa') }}</flux:navlist.item>
-                    <flux:navlist.item icon="building-storefront" :href="route('room.index')" :current="request()->routeIs('room.index')" wire:navigate class="text-white">{{ __('room') }}</flux:navlist.item>
+                    @endcan
+                    @can('mengelola Room')
+                    <flux:navlist.item icon="building-storefront" :href="route('room.index')" :current="request()->routeIs
+                    ('room.index')" wire:navigate class="text-white">{{ __('room') }}</flux:navlist.item>
+                    @endcan
                     <flux:navlist.item icon="banknotes" :href="route('transaksi.index')" :current="request()->routeIs('transaksi.index')" wire:navigate class="text-white">{{ __('transaksi') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
